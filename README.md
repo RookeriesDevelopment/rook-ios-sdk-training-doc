@@ -1,7 +1,4 @@
 
-
-
-
 # RookMotion iOS SDK
 
 RookMotion iOS SDK  allow new and existing applications to integrate RookMotion functionalities for training measurement, tracking, and analysis.
@@ -114,15 +111,20 @@ import RookMotionLink
 
 * The developer can set the `urlBase` to sandbox environment or production environment.
 
+* The developer can set the `urlRemote` to sandbox environment or production environment for remote trainings.
+
+
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         let clientKey = "YOUR_KEY"
         let tokenLevel = "YOUR_TOKEN"
 				let urlBase = "YOUR_BASE_URL"
+				let urlRemote = "YOUR_REMOTE_URL"
 
         RMSettings.shared.setCredentials(client_key: clientKey, token: tokenLevel)
 				RMSettings.shared.setUrlApi(with: urlBase)
+				RMSettings.shared.setUrlRemote(with: urlRemote)
 
         return true
     }
@@ -680,6 +682,7 @@ Provides methods to interact with the RookMotion server. Involves CRUD actions f
 2. [Sensor](#user-content-sensor-api)
 3. [Training](#user-content-training-api)
 4. [Centers](#user-content-centers-api)
+5. [RookRemote](#user-content-rookremote-api)
 
 ###  User api
 
@@ -1295,8 +1298,8 @@ apiManager.retrieveUserRewards(userUUID: userTestUUID, from: startDate, to:  end
 | ----------- | ----------- |
 | `getClientCenters(completion: @escaping (Int, String?) -> Void)` | Returns a json string with all the centers registered in the roomMotion server. |
 | `retrieveRegisteredCentersForUser(userUUID: String, completion: @escaping (Int,String?) -> Void)` | Returns a json string with a user's registered rooms. |
-| `linkUserToCenterRooms(userUUID: String, roomsUUID: [String], completion: @escaping (Int,String?) -> Void)` | Sends a request to link a user in the rooms for the given UUIDs. |
-| `unlinkUserFromRoom(userUUID: String, roomUUID: String, completion: @escaping (Int) -> Void)` | Unlinks a user from room for the room UUID given. |
+| `linkUserToCenterRooms(userUUID: String, branchUUID: String, roomsUUID: [String]?, completion: @escaping (_ httpCode: Int, _ response: String?) -> Void))` | Sends a request to link a user in the rooms for the given UUIDs. |
+| `unlinkUserFromBranch(userUUID: String, branchUUID: String, completion: @escaping (_ httpCode: Int) -> Void)` | Unlinks a user from room for the room UUID given. |
 
 #### getClientCenters()
 
@@ -1510,40 +1513,58 @@ apiManager.retrieveRegisteredCentersForUser(userUUID: "36d11602-1111-2222-3333-a
 #### linkUserToCenterRooms()
 
 ```swift
-public func linkUserToCenterRooms(userUUID: String, roomsUUID: [String], completion: @escaping (Int,String?) -> Void)
+linkUserToCenterRooms(userUUID: String, branchUUID: String, roomsUUID: [String]?, 
+			completion: @escaping (_ httpCode: Int, _ response: String?) -> Void)
 ```
 
-Sends a request to link a user in the rooms for the given UUIDs
+Sends a request to link a user in the rooms for the given branch UUID
 
 ##### Example
 
 ```swift
 let apiManager = RMApi()
-let roomTestUUID = "fiuh2-122-3234-fwefw"
-apiManager.linkUserToCenterRooms(userUUID: "3111bb602-1111-2222-3333-afff57dfesss", roomsUUID: [roomTestUUID]) { (httpCode, jsonString) in
+let branchTestUUID = "fiuh2-122-3234-fwefw"
+apiManager.linkUserToCenterRooms(userUUID: "3111bb602-1111-2222-3333-afff57dfesss", branchUUID: branchTestUUID ,roomsUUID: nil) { (httpCode, jsonString) in
 	print(jsonString)
 }
 
 ```
 
-##### Example Response
-
-```json
-[
-  {
-    "room_uuid": "eeeb5810-a410-45b3-8077-b2e56c3b7563",
-    "result": "added"
-  }
-]
-```
-
-#### unlinkUserFromRoom()
+#### unlinkUserFromBranch()
 
 ```swift
-public func unlinkUserFromRoom(userUUID: String, roomUUID: String, completion: @escaping (Int) -> Void)
+public func unlinkUserFromBranch(userUUID: String, branchUUID: String, completion: @escaping (_ httpCode: Int) -> Void)
 ```
 
-Unlinks a user from room for the room UUID given.
+Unlinks a user from branch for the UUID given.
+
+##### Example
+
+```swift
+let apiManager = RMApi()
+let branchTestUUID = ""
+let userUUID = ""
+
+apiManager.unlinkUserFromBranch(userUUID: userUUId, branchUUID: branchTestUUID) { httpCode in
+	//if httpCode was 204, the branch has been removed.
+}
+
+```
+
+###  Rookremote api
+
+| Function      | Description |
+| ----------- | ----------- | -------- |
+| `retrieveRemoteRooms(userUUID: String, completion: @escaping (_ httpCode: Int, _ response: String?) -> Void)` | Return a list of the remote rooms available. |
+| `connectUserToClass(classUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Send a request to connect a user to a remote class |
+| `sendRealTimeData(user: RMUser, pseudonym: String, stepsTot: Int, caloriesTot: Int, hr: Int, effort: Int, classUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Send the real time data of a training to the remote class connected. |
+| `disconnectUserFromClass(classUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Sent a request to disconnect a user from a remote class. |
+
+#### retrieveRemoteRooms
+
+```swift
+public func retrieveRemoteRooms(userUUID: String, completion: @escaping (_ httpCode: Int, _ response: String?) -> Void)
+```
 
 ##### Example
 
@@ -1552,11 +1573,183 @@ let apiManager = RMApi()
 let roomTestUUID = ""
 let userUUID = ""
 
-apiManager.unlinkUserFromRoom(userUUID: userUUId, roomUUID: roomTestUUID) { httpCode in
-	//if httpCode was equal to 204, the room has been removed.
+apiManager.retrieveRemoteRooms(userUUID: userUUID) { httpCode, jsonResponse in
+	print(jsonResponse)
 }
 
 ```
+
+##### Response example
+
+```json
+[
+  {
+    "chain": {
+      "chain_uuid": "1de3adf5-b9fe-4cc4-ba70-c7bec7bf43ea",
+      "chain_name": "rookmotion",
+      "branch": {
+        "uuid": "b570ed23-5fb0-4a86-a7e6-2346444767f7",
+        "name": "Rookmotion sum",
+        "status": "link",
+        "rooms": [
+          {
+            "id": 1,
+            "uuid": "fdd193f6-180f-446a-bd3d-fc536f60f242",
+            "name": "daq principal",
+            "description": "daq principal",
+            "type_room": "daq"
+          },
+          {
+            "id": 74,
+            "uuid": "0ec6382e-29e1-43d5-a42e-7548035a46cf",
+            "name": "test",
+            "description": null,
+            "type_room": "remote",
+            "training_type": "kangoo",
+            "training_type_uuid": "9c1436dd-16c0-4c56-bb43-b8dd83f0be12",
+            "use_steps": 1,
+            "step_options": "boots",
+            "configuration_uuid": "e23e6fd3-723e-4855-a5c6-e17f07dc3016",
+            "channel": "chanel_4OtT40NWrXmrqD8rx0kmpKPyJCbNCO1",
+            "duration": 14,
+            "capacity": 2,
+            "class_delay": 0,
+            "data_order": "calories",
+            "remote_state": 2
+          },
+          {
+            "id": 75,
+            "uuid": "cf42803e-3613-427b-bc5e-02a49ae3bcde",
+            "name": "test-ban",
+            "description": null,
+            "type_room": "remote"
+          }
+        ]
+      }
+    }
+  }
+]
+```
+
+##### note: If the value of the key "remote_state" is equal to 2, the remote room is available.
+
+#### ConnectUserToClass
+
+```swift
+public func connectUserToClass(classUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?)
+```
+
+##### Example
+
+```swift
+let apiManager = RMApi()
+let roomTestUUID = ""
+let userUUID = ""
+let classUUID = ""
+
+apiManager.connectUserToClass(classUUID: classUUID, userUUID: userUUID) { httpCode, jsonResponse in
+	print(jsonResponse)
+}
+
+```
+
+##### Response example
+
+###### user accepted
+
+```json
+{
+    "result": "added",
+    "remaining_places": 0,
+    "remaining_waiting_seconds": 0
+}
+```
+
+###### the class is full
+
+```json
+{
+    "result": "the Remote is full"
+}
+```
+
+#### sendRealTimeData
+
+```swift
+sendRealTimeData(user: RMUser, imageUserUrl: String? = nil, pseudonym: String, stepsTot: Int, caloriesTot: Int, hr: Int, effort: Int, classUUID: String, retriveUsersList: Bool = false , completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+```
+
+##### Example
+
+```swift
+let apiManager = RMApi()
+let user = RMUser()
+let classUUID = ""
+
+apiManager.sendRealTimeData(user: user, imageUserUrl: "urlImage" ,
+							pseudonym: user.pseudonym,  stepsTot: 10, 
+							caloriesTot: 100, hr: 60, effort: 34, classUUID: classUUID) { httpCode, jsonResponse in
+	print(jsonResponse)
+}
+```
+
+##### Response example
+
+###### measurements accepted
+```json
+httpCode = 201
+{
+    "result": "added",
+    "remaining_waiting_seconds": 0
+}
+```
+
+###### user banned from class
+```json
+httpCode = 300
+{
+    "result": "No exists user"
+}
+```
+
+###### class has finished
+
+```json
+httpCode = 410
+{
+    "errors": {
+        "date": [
+            "date no valid"
+        ]
+    }
+}
+```
+
+#### disconnectUserFromClass
+
+```swift
+public func disconnectUserFromClass(classUUID: String, userUUID: String,
+					 completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+```
+
+##### Example
+
+```swift
+let apiManager = RMApi()
+let user = RMUser()
+let classUUID = ""
+
+apiManager.disconnectUserFromClass(classUUID: String, userUUID: String) { (httpCode, _) in
+	print("Debug httpCode: \(httpCode)")
+}
+```
+
+##### Response example
+
+```swift
+	"Debug httpCode: 204"
+```
+
 
 ### RMStorageManager class
 
@@ -2362,6 +2555,7 @@ The RMUser class is a realm model that conform the  Codable protocol, this model
 | `String?` | phone | Phone number of the user it has to contain 8 to 12 numbers |
 | `String?` | birthday | Birthday of the user with the format "YYYY-MM-dd" |
 | `String?` | sex | Gender of the user ("female" or "male") |
+| `String?` | pseudonym | nickname of the user |
 | RMUserPhysiologicalVariables? | physiologicalVariables | RMUserPhysiologicalVariables object that contains the physiological variables of the user. |
 
 #### updatePhysiologicalVariables()
@@ -2474,6 +2668,7 @@ RMTrainingInfo model is used to store the workout data, it can help to recover t
 |`RMAuxiliarSummary??` | `auxSummary` | Object to store the auxiliary summaries of the workout.  |
 |`RMTrainingSummaries?` | `summary` | Object to store the summary of the workout. |
 |`RMTrainingStoragedRecords?` | `records` | Object to store the list of heart rate records and steps records |
+| `RMRemoteClass?` | `remoteClass` | Object to store the properties of a remote training |
 |`List<RMTrainingSummary>` | `summaries` | Object to store the summary id and its value |
 
 #### RMAuxiliarSummary
@@ -2533,6 +2728,23 @@ This model contains the training summaries on realtime.
 | `Int` | `z3_cadence_tot` | Cadence in the third zone. |
 | `Int` | `z4_cadence_tot` | Cadence in the fourth zone. |
 | `Int` | `z5_cadence_tot` | Cadence in the fifth zone. |
+
+#### RMRemoteClass
+
+```swift
+public class RMRemoteClass: Object
+```
+
+This model stores the data of a remote class.
+
+| Type | Name | Description |
+| ------ | ------ | -------- |
+| `String` | `classUUID` | The UUID for the remote class |
+| `String` | `roomUUID` | The UUID of the room |
+| `String` | `trainingName` | The training name of the class |
+| `Int` | `classDelay` | The period that the data will be send |
+| `Int` | `useSteps` | Indicator if the training use step |
+| `String` | `stepOptions` | Type of steps of the training |
 
 #### RMTrainingStoragedRecords
 
