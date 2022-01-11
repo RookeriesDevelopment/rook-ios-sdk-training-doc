@@ -1513,7 +1513,7 @@ apiManager.retrieveRegisteredCentersForUser(userUUID: "36d11602-1111-2222-3333-a
 #### linkUserToCenterRooms()
 
 ```swift
-linkUserToCenterRooms(userUUID: String, branchUUID: String, roomsUUID: [String]?, 
+linkUserToCenterRooms(userUUID: String, branchUUID: String, roomsUUID: [String]?,
 			completion: @escaping (_ httpCode: Int, _ response: String?) -> Void)
 ```
 
@@ -1553,11 +1553,32 @@ apiManager.unlinkUserFromBranch(userUUID: userUUId, branchUUID: branchTestUUID) 
 
 ###  Rookremote api
 
+##### note: To use these methods the url remote has to be set with the RMSettings class
+
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        let clientKey = "YOUR_KEY"
+        let tokenLevel = "YOUR_TOKEN"
+				let urlBase = "YOUR_BASE_URL"
+				let urlRemote = "YOUR_REMOTE_URL"
+
+        RMSettings.shared.setCredentials(client_key: clientKey, token: tokenLevel)
+				RMSettings.shared.setUrlApi(with: urlBase)
+				RMSettings.shared.setUrlRemote(with: urlRemote)
+
+        return true
+    }
+```
+
+
+
 | Function      | Description |
 | ----------- | ----------- | -------- |
 | `retrieveRemoteRooms(userUUID: String, completion: @escaping (_ httpCode: Int, _ response: String?) -> Void)` | Return a list of the remote rooms available. |
 | `connectUserToClass(classUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Send a request to connect a user to a remote class |
-| `sendRealTimeData(user: RMUser, pseudonym: String, stepsTot: Int, caloriesTot: Int, hr: Int, effort: Int, classUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Send the real time data of a training to the remote class connected. |
+| `sendRealTimeData(user: RMUser, imageUserUrl: String? = nil, pseudonym: String,
+ stepsTot: Int, caloriesTot: Int, hr: Int, effort: Int, classUUID: String, retriveUsersList: Bool = false , completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Send the real time data of a training to the remote class connected. |
 | `disconnectUserFromClass(classUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Sent a request to disconnect a user from a remote class. |
 
 #### retrieveRemoteRooms
@@ -1687,11 +1708,13 @@ let user = RMUser()
 let classUUID = ""
 
 apiManager.sendRealTimeData(user: user, imageUserUrl: "urlImage" ,
-							pseudonym: user.pseudonym,  stepsTot: 10, 
+							pseudonym: user.pseudonym,  stepsTot: 10,
 							caloriesTot: 100, hr: 60, effort: 34, classUUID: classUUID) { httpCode, jsonResponse in
 	print(jsonResponse)
 }
 ```
+
+If the parameter `retriveUserList` is set with **true**, the end point will return a list of the user in the class
 
 ##### Response example
 
@@ -1701,6 +1724,28 @@ httpCode = 201
 {
     "result": "added",
     "remaining_waiting_seconds": 0
+}
+```
+
+###### measurements accepted whit user list
+
+```json
+{
+  "result": "added",
+  "remaining_waiting_seconds": 0,
+  "data": [
+    {
+      "final_user_uuid": "09af36ca-fae1-ff2e-95a6-uiehfiu033",
+      "pseudonym": "usuario 4",
+      "email": "usuario4@rookmotion.com",
+      "steps_tot": 1,
+      "calories_tot": 1,
+      "hr": 60,
+      "effort": 73,
+      "user_url_image": null,
+      "status": 1
+    }
+  ]
 }
 ```
 
