@@ -1,4 +1,5 @@
 
+
 # RookMotion iOS SDK
 
 RookMotion iOS SDK  allow new and existing applications to integrate RookMotion functionalities for training measurement, tracking, and analysis.
@@ -56,7 +57,7 @@ To build a project using the RookMotion SDK you need to download and install
 * [Xcode](https://developer.apple.com/xcode/) version 12.4 or later.
 * [Cocoapods](https://guides.cocoapods.org/using/getting-started.html)
 
-The IOS deployment minimum target is 12.3 and the swift version is 5.0.
+The IOS deployment minimum target is 13.1 and the swift version is 5.0.
 
 
 RookMotionLink is available through CocoaPods. To install it, simply follow the next steps:
@@ -684,6 +685,7 @@ Provides methods to interact with the RookMotion server. Involves CRUD actions f
 3. [Training](#user-content-training-api)
 4. [Centers](#user-content-centers-api)
 5. [RookRemote](#user-content-rookremote-api)
+6. [Gamification](#user-content-gamification-api)
 
 ###  User api
 
@@ -1795,6 +1797,638 @@ apiManager.disconnectUserFromClass(classUUID: String, userUUID: String) { (httpC
 ```swift
 	"Debug httpCode: 204"
 ```
+
+### Gamification
+
+##### note: To use these methods the gamification url has to be set with the RMSettings class
+
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        let clientKey = "YOUR_KEY"
+        let tokenLevel = "YOUR_TOKEN"
+				let urlBase = "YOUR_BASE_URL"
+				let urlRemote = "YOUR_REMOTE_URL"
+				let urlGamification = "YOUR_GAMIFICATION_URL"
+
+        RMSettings.shared.setCredentials(client_key: clientKey, token: tokenLevel)
+				RMSettings.shared.setUrlApi(with: urlBase)
+				RMSettings.shared.setUrlRemote(with: urlRemote)
+				RMSettings.shared.setUrlGamification(with: urlGamification)
+
+        return true
+    }
+```
+
+
+
+| Function      | Description |
+| ----------- | ----------- |
+| ```getUserChallenges(userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)``` | Returns a json string with all the challenges and goals of a user. |
+| ```leaveChallenge(challengeUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void) ``` | Sends a request to unsubscribe a user from a challenge. |
+
+#### getUserChallenges
+
+Retrieves a json string that contains al the challenges and goals of a user.
+
+```swift
+public func  getUserChallenges(userUUID: String,
+									completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+```
+
+##### Example
+
+```swift
+let apiManager = RMApi()
+
+apiManager.getUserChallenges(userUUID: "userUUID") { (httpCode, response) in
+	print("user challenges \(response)")
+}
+```
+
+##### Response example
+
+```json
+{
+  "message": "Challenges retrieved successfully",
+  "data": {
+    "individual": [
+      {
+        "challenge_id": 1,
+        "challenge_uuid": "e0b115c2-e05d-4289-a33b-54cd276a9482",
+        "branch_uuid": "e8859598-e042-4e23-b3e8-0674f5565ed1",
+        "challenge_type_id": 1,
+        "challenge_type": "Individual",
+        "challenge_modality_id": 1,
+        "challenge_modality": "By User",
+        "name": "Prueba CS",
+        "description": null,
+        "status": 1,
+        "allow_app": 0,
+        "allow_room": 0,
+        "device_type": null,
+        "start_at": "2022-03-02",
+        "finish_at": "2022-04-02",
+        "created_at": "2022-03-02 16:30:21",
+        "updated_at": "2022-03-02 16:30:21",
+        "users_participating": {
+          "data": 2
+        },
+        "position_in_challenge": null,
+        "total_goals": {
+          "data": 1
+        },
+        "goals": {
+          "data": [
+            {
+              "id": 1,
+              "uuid": "72a01937-ac55-445e-8ab2-c4e48743a236",
+              "branch_uuid": "e8859598-e042-4e23-b3e8-0674f5565ed1",
+              "goal_type_id": 400,
+              "goal_type": "Calories",
+              "meta": "5000",
+              "points": "2.00",
+              "created_at": "2022-03-02 16:30:35",
+              "updated_at": "2022-03-02 16:30:35",
+              "metrics": {
+                "data": [
+                  {
+                    "id": 28,
+                    "challenge_id": 1,
+                    "user_id": 84,
+                    "goal_id": 1,
+                    "goal_type": null,
+                    "value": "437.00",
+                    "created_at": "2022-03-03 05:15:48",
+                    "updated_at": "2022-03-03 05:15:48"
+                  },
+                  {
+                    "id": 29,
+                    "challenge_id": 1,
+                    "user_id": 84,
+                    "goal_id": 1,
+                    "goal_type": null,
+                    "value": "437.00",
+                    "created_at": "2022-03-03 05:15:48",
+                    "updated_at": "2022-03-03 05:15:48"
+                  },
+                  {
+                    "id": 121,
+                    "challenge_id": 1,
+                    "user_id": 84,
+                    "goal_id": 1,
+                    "goal_type": null,
+                    "value": "703.00",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 123,
+                    "challenge_id": 1,
+                    "user_id": 84,
+                    "goal_id": 1,
+                    "goal_type": null,
+                    "value": "703.00",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 193,
+                    "challenge_id": 1,
+                    "user_id": 84,
+                    "goal_id": 1,
+                    "goal_type": null,
+                    "value": "501.00",
+                    "created_at": "2022-03-08 05:20:33",
+                    "updated_at": "2022-03-08 05:20:33"
+                  },
+                  {
+                    "id": 194,
+                    "challenge_id": 1,
+                    "user_id": 84,
+                    "goal_id": 1,
+                    "goal_type": null,
+                    "value": "501.00",
+                    "created_at": "2022-03-08 05:20:33",
+                    "updated_at": "2022-03-08 05:20:33"
+                  },
+                  {
+                    "id": 201,
+                    "challenge_id": 1,
+                    "user_id": 84,
+                    "goal_id": 1,
+                    "goal_type": null,
+                    "value": "501.00",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "total_goals_completed": {
+          "data": 0
+        },
+        "goals_completed": {
+          "data": []
+        }
+      }
+    ],
+    "group": [
+      {
+        "challenge_id": 24,
+        "challenge_uuid": "edff1503-cca3-4eec-8b8d-47eb38984952",
+        "branch_uuid": "a71f5493-7e5d-4f68-bdee-f111d72f7894",
+        "challenge_type_id": 2,
+        "challenge_type": "Group",
+        "challenge_modality_id": 2,
+        "challenge_modality": "By Team",
+        "name": "Reto Marzo",
+        "description": null,
+        "status": 1,
+        "allow_app": 0,
+        "allow_room": 0,
+        "device_type": null,
+        "start_at": "2022-03-06",
+        "finish_at": "2022-05-01",
+        "created_at": "2022-03-06 05:01:53",
+        "updated_at": "2022-03-06 05:01:53",
+        "teams_participating": {
+          "data": 2
+        },
+        "team_position": {
+          "data": null
+        },
+        "user_team_position": {
+          "data": null
+        },
+        "total_goals": {
+          "data": 6
+        },
+        "goals": {
+          "data": [
+            {
+              "id": 23,
+              "uuid": "83314bfe-1a2b-463a-ade1-24cbf29d0292",
+              "branch_uuid": "a71f5493-7e5d-4f68-bdee-f111d72f7894",
+              "goal_type_id": 400,
+              "goal_type": "Calories",
+              "meta": "5000",
+              "points": "10.00",
+              "created_at": "2022-03-06 05:15:37",
+              "updated_at": "2022-03-06 05:15:37",
+              "metrics": {
+                "data": [
+                  {
+                    "id": 128,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 23,
+                    "goal_type": null,
+                    "value": "703.00",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 133,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 23,
+                    "goal_type": null,
+                    "value": "703.00",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 202,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 23,
+                    "goal_type": null,
+                    "value": "501.00",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  },
+                  {
+                    "id": 207,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 23,
+                    "goal_type": null,
+                    "value": "501.00",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  },
+                  {
+                    "id": 212,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 23,
+                    "goal_type": null,
+                    "value": "501.00",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  }
+                ]
+              }
+            },
+            {
+              "id": 24,
+              "uuid": "171b7f20-c9f0-48ad-8a09-bc6793cf70b5",
+              "branch_uuid": "a71f5493-7e5d-4f68-bdee-f111d72f7894",
+              "goal_type_id": 900,
+              "goal_type": "Trainings",
+              "meta": "20",
+              "points": "10.00",
+              "created_at": "2022-03-06 05:15:52",
+              "updated_at": "2022-03-06 05:15:52",
+              "metrics": {
+                "data": [
+                  {
+                    "id": 132,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 24,
+                    "goal_type": null,
+                    "value": "1.00",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 134,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 24,
+                    "goal_type": null,
+                    "value": "1.00",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 206,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 24,
+                    "goal_type": null,
+                    "value": "1.00",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  },
+                  {
+                    "id": 210,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 24,
+                    "goal_type": null,
+                    "value": "1.00",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  },
+                  {
+                    "id": 213,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 24,
+                    "goal_type": null,
+                    "value": "1.00",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  }
+                ]
+              }
+            },
+            {
+              "id": 25,
+              "uuid": "da0f3ed6-9c4e-4ad0-9054-67d84e1cc2b6",
+              "branch_uuid": "a71f5493-7e5d-4f68-bdee-f111d72f7894",
+              "goal_type_id": 4,
+              "goal_type": "Minutes in Zone 2 (Blue)",
+              "meta": "200",
+              "points": "20.00",
+              "created_at": "2022-03-06 05:17:47",
+              "updated_at": "2022-03-06 05:17:47",
+              "metrics": {
+                "data": [
+                  {
+                    "id": 122,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 25,
+                    "goal_type": null,
+                    "value": "7.53",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 127,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 25,
+                    "goal_type": null,
+                    "value": "7.53",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 195,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 25,
+                    "goal_type": null,
+                    "value": "27.73",
+                    "created_at": "2022-03-08 05:20:33",
+                    "updated_at": "2022-03-08 05:20:33"
+                  },
+                  {
+                    "id": 198,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 25,
+                    "goal_type": null,
+                    "value": "27.73",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  },
+                  {
+                    "id": 205,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 25,
+                    "goal_type": null,
+                    "value": "27.73",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  }
+                ]
+              }
+            },
+            {
+              "id": 26,
+              "uuid": "7a5f9c29-7bbb-4f22-9263-5afcff01f786",
+              "branch_uuid": "a71f5493-7e5d-4f68-bdee-f111d72f7894",
+              "goal_type_id": 5,
+              "goal_type": "Minutes in Zone 3 (Green)",
+              "meta": "300",
+              "points": "30.00",
+              "created_at": "2022-03-06 05:18:00",
+              "updated_at": "2022-03-06 05:18:00",
+              "metrics": {
+                "data": [
+                  {
+                    "id": 124,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 26,
+                    "goal_type": null,
+                    "value": "9.85",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 129,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 26,
+                    "goal_type": null,
+                    "value": "9.85",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 196,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 26,
+                    "goal_type": null,
+                    "value": "4.72",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  },
+                  {
+                    "id": 200,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 26,
+                    "goal_type": null,
+                    "value": "4.72",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  },
+                  {
+                    "id": 208,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 26,
+                    "goal_type": null,
+                    "value": "4.72",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  }
+                ]
+              }
+            },
+            {
+              "id": 27,
+              "uuid": "a2e93762-36e8-4530-81db-90a5b7b6bdc0",
+              "branch_uuid": "a71f5493-7e5d-4f68-bdee-f111d72f7894",
+              "goal_type_id": 6,
+              "goal_type": "Minutes in Zone 4 (Orange)",
+              "meta": "200",
+              "points": "30.00",
+              "created_at": "2022-03-06 05:18:16",
+              "updated_at": "2022-03-06 05:18:16",
+              "metrics": {
+                "data": [
+                  {
+                    "id": 125,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 27,
+                    "goal_type": null,
+                    "value": "13.35",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 130,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 27,
+                    "goal_type": null,
+                    "value": "13.35",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 197,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 27,
+                    "goal_type": null,
+                    "value": "0.00",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  },
+                  {
+                    "id": 203,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 27,
+                    "goal_type": null,
+                    "value": "0.00",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  },
+                  {
+                    "id": 209,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 27,
+                    "goal_type": null,
+                    "value": "0.00",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  }
+                ]
+              }
+            },
+            {
+              "id": 28,
+              "uuid": "493dc14b-ad98-4a30-817f-5a5c25aff268",
+              "branch_uuid": "a71f5493-7e5d-4f68-bdee-f111d72f7894",
+              "goal_type_id": 7,
+              "goal_type": "Minutes in Zone 5 (Red)",
+              "meta": "120",
+              "points": "10.00",
+              "created_at": "2022-03-06 05:18:51",
+              "updated_at": "2022-03-06 05:18:51",
+              "metrics": {
+                "data": [
+                  {
+                    "id": 126,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 28,
+                    "goal_type": null,
+                    "value": "12.20",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 131,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 28,
+                    "goal_type": null,
+                    "value": "12.20",
+                    "created_at": "2022-03-06 06:14:29",
+                    "updated_at": "2022-03-06 06:14:29"
+                  },
+                  {
+                    "id": 199,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 28,
+                    "goal_type": null,
+                    "value": "0.00",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  },
+                  {
+                    "id": 204,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 28,
+                    "goal_type": null,
+                    "value": "0.00",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  },
+                  {
+                    "id": 211,
+                    "challenge_id": 24,
+                    "user_id": 84,
+                    "goal_id": 28,
+                    "goal_type": null,
+                    "value": "0.00",
+                    "created_at": "2022-03-08 05:20:34",
+                    "updated_at": "2022-03-08 05:20:34"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "total_goals_completed": {
+          "data": 0
+        }
+      }
+    ]
+  }
+}
+```
+
+#### leaveChallenge
+
+This request unsubscribe a user from a challenge.   
+
+```swift
+public func  leaveChallenge(challengeUUID: String, userUUID: String,
+									completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+```
+
+##### Example
+
+```swift
+let apiManager = RMApi()
+
+apiManager.leaveChellenge(challengeUUID: "uuid", userUUID: "userUUID") { (httpCode, response) in
+
+	print("user unsubscribed")
+}
+```
+
 
 
 ### RMStorageManager class
