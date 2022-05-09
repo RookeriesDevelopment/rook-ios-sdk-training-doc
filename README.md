@@ -39,14 +39,15 @@ These functionalities are:
 1. [Installation](#user-content-installation)
 2. [Configuration](#user-content-configuration)
 3. [Package usage](#user-content-package-usage)
-	* [RMSensorManager class](#user-content-rmsensormanager-class)
-	* [RMTrainingManager class](#user-content-rmtrainingmanager-class)
-	* [Network](#user-content-networkclass)
-		* [Network class](#user-content-networkclass)
-		* [RMApi class](#user-content-rmapi-class)
-	* [RMStorageManager class](#user-content-rmstoragemanager-class)
-	* [RMClass](#user-content-rmclass)
-	* [RMModels](#user-content-rmmodels)
+    * [RMSensorManager class](#user-content-rmsensormanager-class)
+    * [RMTrainingManager class](#user-content-rmtrainingmanager-class)
+    * [Network](#user-content-networkclass)
+        * [Network class](#user-content-networkclass)
+        * [RMApi class](#user-content-rmapi-class)
+    * [RMStorageManager class](#user-content-rmstoragemanager-class)
+    * [RMClass](#user-content-rmclass)
+    * * [RMCommunicationManager](#user-content-rmcommunicationmanager)
+    * [RMModels](#user-content-rmmodels)
 
 
 ## Installation ##
@@ -77,7 +78,7 @@ open .Podfile -a xcode
 3. Add the following line to your Podfile
 
 ```Ruby
-	pod 'RookMotionSDK', :git => "https://gitlab.com/rooklinkforclients/RookMotion-SDK-Cocoa.git"
+    pod 'RookMotionSDK', :git => "https://gitlab.com/rooklinkforclients/RookMotion-SDK-Cocoa.git"
 ```
 
 4. Add the following lines at the end of the Podfile
@@ -121,12 +122,13 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
         // Override point for customization after application launch.
         let clientKey = "YOUR_KEY"
         let tokenLevel = "YOUR_TOKEN"
-				let urlBase = "YOUR_BASE_URL"
-				let urlRemote = "YOUR_REMOTE_URL"
+                let urlBase = "YOUR_BASE_URL"
+                let urlRemote = "YOUR_REMOTE_URL"
 
         RMSettings.shared.setCredentials(client_key: clientKey, token: tokenLevel)
-				RMSettings.shared.setUrlApi(with: urlBase)
-				RMSettings.shared.setUrlRemote(with: urlRemote)
+        RMSettings.shared.setUrlApi(with: urlBase)
+        RMSettings.shared.setUrlRemote(with: urlRemote)
+        RMSettings.shared.initRookMotionSDK()
 
         return true
     }
@@ -190,9 +192,9 @@ Stops the sensors discovering.
 ```swift
 let sensorManager  = RMSensorManager.shared
 
-	sensorManager.startDiscovery()
-		// Some process
-	sensorManager.stopDiscovery()
+    sensorManager.startDiscovery()
+        // Some process
+    sensorManager.stopDiscovery()
 
 ```
 
@@ -283,22 +285,22 @@ public protocol RMSensorConnectionCallback
 ```swift
 
 class CustomClass: RMSensorConnectionCallback{
-	let sensorManager  = RMSensorManager.shared
+    let sensorManager  = RMSensorManager.shared
 
-	let sensor = CBPeripheral
+    let sensor = CBPeripheral
 
-	override func viewDidLoad() {
-		sensorManager.connectionDelegate = self
-		sensorManager.connect(device: sensor)
-		sensorManager.disconnect(device : sensor)
-	}
-	func onSensorConnected(rmSensor: CBPeripheral) {
-		print(rmSensor)
-	}
+    override func viewDidLoad() {
+        sensorManager.connectionDelegate = self
+        sensorManager.connect(device: sensor)
+        sensorManager.disconnect(device : sensor)
+    }
+    func onSensorConnected(rmSensor: CBPeripheral) {
+        print(rmSensor)
+    }
 
-	func onSensorDisconnected(peripheral: CBPeripheral) {
-		print(peripheral)
-	}
+    func onSensorDisconnected(peripheral: CBPeripheral) {
+        print(peripheral)
+    }
 
 }
 
@@ -321,22 +323,22 @@ public protocol RMSensorDiscoveryCallback
 ```swift
 
 class CustomClass: RMSensorDiscoveryCallback{
-	let sensorManager  = RMSensorManager.shared
+    let sensorManager  = RMSensorManager.shared
 
-	let sensor = CBPeripheral
-	override func viewDidLoad() {
-		sensorManager.dicoveryDelegate = self
-		sensorManager.startDiscovery()
-		sensorManager.stopDiscovery()
-	}
+    let sensor = CBPeripheral
+    override func viewDidLoad() {
+        sensorManager.dicoveryDelegate = self
+        sensorManager.startDiscovery()
+        sensorManager.stopDiscovery()
+    }
 
-	func onSensorDiscovered(sensorList: [CBPeripheral]){
-		print(sensorList)
-	}
+    func onSensorDiscovered(sensorList: [CBPeripheral]){
+        print(sensorList)
+    }
 
-	func onDiscoveryStopped(sensorList: [CBPeripheral]){
-		print(sensorList)
-	}
+    func onDiscoveryStopped(sensorList: [CBPeripheral]){
+        print(sensorList)
+    }
 
 }
 
@@ -360,30 +362,30 @@ public protocol RMSensorCallback
 ```swift
 
 class CustomClass: ViewController, RMSensorConnectionCallback {
-	let sensorManager  = RMSensorManager.shared
+    let sensorManager  = RMSensorManager.shared
 
-	let sensor = CBPeripheral
+    let sensor = CBPeripheral
 
 
-	override func viewDidLoad {
-		sensorManager.sensorDelegate = self
-		sensorManager.connect(device: sensor)
-	}
+    override func viewDidLoad {
+        sensorManager.sensorDelegate = self
+        sensorManager.connect(device: sensor)
+    }
 
-	func onHeartRateReceived(bpm: Int, badContact: Bool{
-		print(bpm)
-		print(badContact)
-	}
+    func onHeartRateReceived(bpm: Int, badContact: Bool{
+        print(bpm)
+        print(badContact)
+    }
 
-	func onStepsReceived(steps: Int, cadence: Float, deltaSteps: Int) {
-		print(steps)
-		print(cadence)
-		print(deltaSteps)
-	}
+    func onStepsReceived(steps: Int, cadence: Float, deltaSteps: Int) {
+        print(steps)
+        print(cadence)
+        print(deltaSteps)
+    }
 
-	func onBatteryReceived(batteryLevel : Int) {
-		print(batteryLevel)
-	}
+    func onBatteryReceived(batteryLevel : Int) {
+        print(batteryLevel)
+    }
 }
 
 ```
@@ -401,9 +403,9 @@ The developer can inherence from this class that provides automated methods to p
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | trainingSensor | ```CBPeripheral?``` | Reference to sensor that will be used for training. |
-| sensorList | ```[CBPeripheral]```	| This array of CBPeripheral contains the discovered sensors around the device. |
+| sensorList | ```[CBPeripheral]```    | This array of CBPeripheral contains the discovered sensors around the device. |
 | storageManager | [RMStorageManager](#user-content-rmstoragemanager) | This is a instance of the RMStorageManager class that allows to access to storage methods. |
-|  training | [RMTrainingInfo](#user-content-rmtriaininginfo) | This an model object of realm that contains all the data of a training |
+|  training | [RMTrainingInfo](#user-content-rmtriaininginfo) | This model object of realm that contains all the data of a training |
 |sensorManager | [RMSensorManager.shared()](#user-content-rmsensormanager-class) | Reference of the singleton instance of the class RMSensorManager|
 | duration | ```Float``` | Variable to set the training duration |
 | isTrainingActive | ```Bool``` | Variable to know if the training is active or not. |
@@ -438,17 +440,17 @@ Note: Before calling this method it is recommended to establish a connection wit
 ```swift
 
 class TrainingClass: RMTrainingManager {
-	// This sensor was declared just for example purposes
-	let sensorToConnect : CBPeripheral?
-	let trainingTypeUUID : String?
+    // This sensor was declared just for example purposes
+    let sensorToConnect : CBPeripheral?
+    let trainingTypeUUID : String?
 
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		connectSensor(sensor: sensorToConnect)
-		trainingSensor = sensor
-		training.trainingTypeUUID = trainingTypeUUID
-		training.startTraining()
-	}
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        connectSensor(sensor: sensorToConnect)
+        trainingSensor = sensor
+        training.trainingTypeUUID = trainingTypeUUID
+        training.startTraining()
+    }
 
 }
 
@@ -466,18 +468,18 @@ Starts a connection with a given peripheral, when the connection is established,
 ```swift
 
 class TrainingClass: RMTrainingManager {
-	// This sensor was declared just for example purposes
-	let sensorToConnect : CBPeripheral?
+    // This sensor was declared just for example purposes
+    let sensorToConnect : CBPeripheral?
 
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		connectSensor(sensor: sensorToConnect)
-		trainingSensor = sensor
-	}
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        connectSensor(sensor: sensorToConnect)
+        trainingSensor = sensor
+    }
 
-	override func displayHrMeasurements(hrData: RMHrDerivedRecord) {
-		print(hrData)
-	}
+    override func displayHrMeasurements(hrData: RMHrDerivedRecord) {
+        print(hrData)
+    }
 
 }
 
@@ -501,22 +503,22 @@ Note: To upload a training successfully a [RMUser](#user-content-rmuser) needs t
 ##### Example
 ```swift
 class TrainingClass: RMTrainingManager {
-	// This sensor was declared just for example purposes
-	let sensorToConnect : CBPeripheral?
+    // This sensor was declared just for example purposes
+    let sensorToConnect : CBPeripheral?
 
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		connectSensor(sensor: sensorToConnect)
-		trainingSensor = sensorToConnect
-		training.startTraining()
-	}
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        connectSensor(sensor: sensorToConnect)
+        trainingSensor = sensorToConnect
+        training.startTraining()
+    }
 
-	@objc func stopTraining() {
-		let resultsTraining = ResultsTrainingViewController()
-		resultsTraining.training = self.training
-		finishTraining(sensor: self.trainingSensor)
-		performSegue(withIdentifier: "showResults", sender: nil)
-	}
+    @objc func stopTraining() {
+        let resultsTraining = ResultsTrainingViewController()
+        resultsTraining.training = self.training
+        finishTraining(sensor: self.trainingSensor)
+        performSegue(withIdentifier: "showResults", sender: nil)
+    }
 
 }
 
@@ -535,21 +537,21 @@ public func pauseTraining()
 ```swift
 
 class TrainingClass: RMTrainingManager {
-	// This sensor was declared just for example purposes
-	let sensorToConnect : CBPeripheral?
-	let trainingTypeUUID : String?
+    // This sensor was declared just for example purposes
+    let sensorToConnect : CBPeripheral?
+    let trainingTypeUUID : String?
 
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		connectSensor(sensor: sensorToConnect)
-		trainingSensor = sensor
-		training.trainingTypeUUID = trainingTypeUUID
-		training.startTraining()
-	}
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        connectSensor(sensor: sensorToConnect)
+        trainingSensor = sensor
+        training.trainingTypeUUID = trainingTypeUUID
+        training.startTraining()
+    }
 
-	@objc func pauseButtonTap() {
+    @objc func pauseButtonTap() {
         pauseTraining()
-	}
+    }
 
 }
 
@@ -563,14 +565,14 @@ If the application is terminated, there is a method that loads the training data
 ```swift
 class TrainingClass: RMTrainingManager {
 
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		guard let unfinishedTrainings = storageManager.getUnfinishedTrainings() else { return }
-		if let trainingToContinue = unfinishedTrainings.first {
-			self.training = trainingToContinue
-			self.loadUnfinishedTraining()
-		}
-	}
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        guard let unfinishedTrainings = storageManager.getUnfinishedTrainings() else { return }
+        if let trainingToContinue = unfinishedTrainings.first {
+            self.training = trainingToContinue
+            self.loadUnfinishedTraining()
+        }
+    }
 }
 ```
 
@@ -593,34 +595,34 @@ The `handleSensorDisconnected` method is called, when a disconnection occurs wit
 ##### Example
 ```swift
 class TrainingClass: RMTrainingManager {
-	// This sensor was declared just for example purposes
-	let sensorToConnect : CBPeripheral?
+    // This sensor was declared just for example purposes
+    let sensorToConnect : CBPeripheral?
 
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		connectSensor(sensor: sensorToConnect)
-		trainingSensor = sensorToConnect
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        connectSensor(sensor: sensorToConnect)
+        trainingSensor = sensorToConnect
 
-	}
+    }
 
-	override func displayHrMeasurements(hrData: RMHrDerivedRecord) {
-		print(hrData)
-	}
+    override func displayHrMeasurements(hrData: RMHrDerivedRecord) {
+        print(hrData)
+    }
 
-	override func displayStepsMeasurements(stepDerivedData: RMStepDerivedRecord) {
-		print(stepDerivedData)
-	}
+    override func displayStepsMeasurements(stepDerivedData: RMStepDerivedRecord) {
+        print(stepDerivedData)
+    }
 
-	override func displayBatteryLevel(batteryLevel: Int) {
-		print(batteryLevel)
-	}
+    override func displayBatteryLevel(batteryLevel: Int) {
+        print(batteryLevel)
+    }
 
-	override func displaySensorProperties(rmSensor: CBPeripheral) {
-		print(rmSensor)
-	}
-	override func handleSensorDisconnected() {
-		print("sensor disconnected")
-	}
+    override func displaySensorProperties(rmSensor: CBPeripheral) {
+        print(rmSensor)
+    }
+    override func handleSensorDisconnected() {
+        print("sensor disconnected")
+    }
 
 }
 ```
@@ -650,7 +652,7 @@ let network  = Network()
 let internetIsAvailable = network.internetIsAvailable()
 
 if internetIsAvailable {
-	//code
+    //code
 }
 ```
 
@@ -668,7 +670,7 @@ let network  = Network()
 let serverIsAlive = network.apiIsAlive()
 
 if serverIsAlive {
-	//code
+    //code
 }
 ```
 
@@ -714,7 +716,7 @@ let apiManager  = RMApi()
 let myUserEmail = "user@email.com"
 
 apiManager.addUser(email: myUserEmail) { (httpCode, uuid) in
-	print("Your rookmotion uuid is \(uuid)")
+    print("Your rookmotion uuid is \(uuid)")
 }
 ```
 
@@ -730,8 +732,8 @@ let apiManager  = RMApi()
 let userUUID = "1111-2222-3333-4444"
 
 apiManager.deleteUserToRookMotion(UUID:: userUUID) { (httpCode) in
-	print(httpCode)
-	//if the status code was 204, the user has been deleted
+    print(httpCode)
+    //if the status code was 204, the user has been deleted
 }
 ```
 #### getUserStatus()
@@ -746,7 +748,7 @@ Returns a json string with basic information about user's status.
 let apiManager = RMApi()
 let emailUser = "test@email.com"
 apiManager.getUserStatus(email: userTestEmail) { (httpCode,response) in
-	print(response)
+    print(response)
 }
 ```
 
@@ -754,14 +756,14 @@ apiManager.getUserStatus(email: userTestEmail) { (httpCode,response) in
 
 ```json
 {
-	"email_verified_at" : "2021-06-11 11:25:02",
-	"last_login_at" : "1969-12-31 18:00:00",
-	"password_updated_at" : "1969-12-31 18:00:00",
-	"user_created_on" : null,
-	"user_status" : 1,
-	"user_uuid" : "66bbb787-1234-1234-1234-a44457dfe180",
-	"profile_filled_at" : "2020-01-16 00:00:00",
-	"payment_status" : null
+    "email_verified_at" : "2021-06-11 11:25:02",
+    "last_login_at" : "1969-12-31 18:00:00",
+    "password_updated_at" : "1969-12-31 18:00:00",
+    "user_created_on" : null,
+    "user_status" : 1,
+    "user_uuid" : "66bbb787-1234-1234-1234-a44457dfe180",
+    "profile_filled_at" : "2020-01-16 00:00:00",
+    "payment_status" : null
 }
 ```
 #### addUserPhysiologicalVariables()
@@ -777,7 +779,7 @@ let apiManager  = RMApi()
 let userUUID = "1111-2222-3333-4444"
 
 apiManager.addUserPhysiologicalVariables(weight: 70.0, height: 170.0, resting_heart_rate: 60, userUUID: userUUID) { (httpCode, response) in
-	//If httpCode was equal to 201, the physiological variables has been added to the user
+    //If httpCode was equal to 201, the physiological variables has been added to the user
 }
 ```
 
@@ -839,7 +841,7 @@ Returns a json string with basic information of the user for the UUID provided
 let apiManager = RMApi()
 let userUUID = "12bybyb11-1111-1111-1111-mcoienw1"
 apiManager.getUserInformation(UUID: userUUID) { (httpCode,response) in
-	print(response)
+    print(response)
 }
 ```
 
@@ -847,18 +849,18 @@ apiManager.getUserInformation(UUID: userUUID) { (httpCode,response) in
 
 ```json
 {
-	"user_uuid": "36ddd602-1111-2222-3333-a44457dfe180",
-	"name": "paco",
-	"last_name_1": "test",
-	"last_name_2": "test",
-	"email": "test@email.com",
-	"birthday": "1994-06-15",
-	"sex": "male",
-	"physiological_variables": {
-		"weight": "71.00",
-		"height": "171.00",
-		"resting_heart_rate": "60.00"
-		}
+    "user_uuid": "36ddd602-1111-2222-3333-a44457dfe180",
+    "name": "paco",
+    "last_name_1": "test",
+    "last_name_2": "test",
+    "email": "test@email.com",
+    "birthday": "1994-06-15",
+    "sex": "male",
+    "physiological_variables": {
+        "weight": "71.00",
+        "height": "171.00",
+        "resting_heart_rate": "60.00"
+        }
 }
 ```
 
@@ -866,9 +868,9 @@ apiManager.getUserInformation(UUID: userUUID) { (httpCode,response) in
 
 ```swift
 updateUserInformation(userUUID: String, name: String,
-					  last_name: String?, mother_last_name: String?,
-					  birthday: String, sex: String,
-					  completion: @escaping (Int,String) -> Void)
+                      last_name: String?, mother_last_name: String?,
+                      birthday: String, sex: String,
+                      completion: @escaping (Int,String) -> Void)
 ```
 
 Updates the user's information on the RookMotion server.
@@ -878,7 +880,7 @@ Updates the user's information on the RookMotion server.
 let apiManager = RMApi()
 let userUUID = "12bybyb11-1111-1111-1111-mcoienw1"
 apiManager.updateUserInformation( userUUID: userUUID, name: "PruebaFW", last_name: "last name", mother_last_name: "last name 2", birthday: "1990-12-12", sex: "male") { (httpCode, JSONString) in
-	print("\(httpCode) \(JSONString)")
+    print("\(httpCode) \(JSONString)")
 }
 ```
 
@@ -904,7 +906,7 @@ let apiManager = RMApi()
 let userUUID = "12bybyb11-1111-1111-1111-mcoienw1"
 
 apiManager.addSensorToUser(sensor_name: "prueba_sensor-00º", sensor_mac: "CC:AA:AA:AA:AA:AA", ownership_type: "owned", userUUID: userUUID) { (httpCode, sensor_uuid) in
-	print("Your sensor id is \(sensor_uuid)")
+    print("Your sensor id is \(sensor_uuid)")
 }
 ```
 
@@ -921,34 +923,34 @@ let apiManager = RMApi()
 let userUUID = "12bybyb11-1111-1111-1111-mcoienw1"
 
 retrieveSensorsFromUser(userUUID: userTestUUID) { (httpCode, sensorList, count) in
-	print("DEBUG: \(sensorList)")
+    print("DEBUG: \(sensorList)")
 }
 ```
 
 ##### Response example
 ```json
 [
-	{
-		"sensor_name" : "HW702A-0582625",
-		"updated_at" : "2021-06-14 19:18:23",
-		"ownership_type" : "owned",
-		"sensor_mac" : null,
-		"sensor_uuid" : "503b10be-2222-2222-2222-d9e785373ce6"
-	},
-	{
-		"sensor_name" : "RkHRam 0805138",
-		"updated_at" : "2021-06-30 13:41:36",
-		"ownership_type" : "owned",
-		"sensor_mac" : "E3:00:A0:9E:86:0C",
-		"sensor_uuid" : "62710e70-1111-1111-1111-fb5a2f0ae23c"
-	},
-	{
-		"sensor_name" : "Rook i-0162733",
-		"updated_at" : "2021-06-11 11:31:53",
-		"ownership_type" : "owned",
-		"sensor_mac" : null,
-		"sensor_uuid" : "ace8cd2b-3333-3333-3333-ef07ed0f27e2"
-	}
+    {
+        "sensor_name" : "HW702A-0582625",
+        "updated_at" : "2021-06-14 19:18:23",
+        "ownership_type" : "owned",
+        "sensor_mac" : null,
+        "sensor_uuid" : "503b10be-2222-2222-2222-d9e785373ce6"
+    },
+    {
+        "sensor_name" : "RkHRam 0805138",
+        "updated_at" : "2021-06-30 13:41:36",
+        "ownership_type" : "owned",
+        "sensor_mac" : "E3:00:A0:9E:86:0C",
+        "sensor_uuid" : "62710e70-1111-1111-1111-fb5a2f0ae23c"
+    },
+    {
+        "sensor_name" : "Rook i-0162733",
+        "updated_at" : "2021-06-11 11:31:53",
+        "ownership_type" : "owned",
+        "sensor_mac" : null,
+        "sensor_uuid" : "ace8cd2b-3333-3333-3333-ef07ed0f27e2"
+    }
 ]
 ```
 
@@ -967,7 +969,7 @@ let userUUID = "12bybyb11-1111-1111-1111-mcoienw1"
 let sensorUUID = "ace8cd2b-3333-3333-3333-ef07ed0f27e2"
 
 apiManager.removeUserSensor(userUUID: userUUID, sensorUUID: sensorUUID) { (httpCode) in
-	//If httpCode was equal to 204, the user sensor has been removed.
+    //If httpCode was equal to 204, the user sensor has been removed.
 
 }
 
@@ -998,7 +1000,7 @@ let apiManager = RMApi()
 let userUUID = "12bybyb11-1111-1111-1111-mcoienw1"
 
 apiManager.retrieveTrainingTypes{ (httpCode, trainings, count) in
-	print(" Debug: ", trainings)
+    print(" Debug: ", trainings)
 }
 ```
 
@@ -1047,7 +1049,7 @@ let apiManager = RMApi()
 let userUUID = "12bybyb11-1111-1111-1111-mcoienw1"
 
 apiManager.addTrainingToUser(userUUID: String, training: RMTrainingRetrived) { (httpCode, response, response description) in
-	print(response)
+    print(response)
 }
 
 ```
@@ -1141,7 +1143,7 @@ let apiManager = RMApi()
 let trainingUUID = ""
 
 apiManager.getTrainingInformation(trainingUUID: trainingUUID) { (httpCode, jsonString) in
-	print(jsonString!)
+    print(jsonString!)
 }
 
 ```
@@ -1249,7 +1251,7 @@ let apiManager = RMApi()
 let trainingUUID = ""
 
 apiManager.deleteTrainingRookMotion(trainingUUID: String) { (httpCode) in
-	// If httpCode was equal to 204, the training has been removed.
+    // If httpCode was equal to 204, the training has been removed.
 }
 
 ```
@@ -1271,7 +1273,7 @@ guard let startDate = Calendar.current.date(byAdding: day, to: Date()) else { re
 let endDate = Date()
 
 apiManager.retrieveUserRewards(userUUID: userTestUUID, from: startDate, to:  endDate) { (httpCode, rewardList, rewardCount) in
-	print(rewardList)
+    print(rewardList)
 }
 
 ```
@@ -1316,7 +1318,7 @@ public func getClientCenters(completion: @escaping (Int, String?) -> Void)
 let apiManager = RMApi()
 
 apiManager.getClientCenters() { (httpCode, jsonString) in
-	print(jsonString ?? "-")
+    print(jsonString ?? "-")
 }
 
 ```
@@ -1462,7 +1464,7 @@ Returns a json string with a user's registered rooms.
 let apiManager = RMApi()
 
 apiManager.retrieveRegisteredCentersForUser(userUUID: "36d11602-1111-2222-3333-afff57dfe180") { (httpCode, jsonString) in
-	print(jsonString ?? "-")
+    print(jsonString ?? "-")
 }
 
 ```
@@ -1517,7 +1519,7 @@ apiManager.retrieveRegisteredCentersForUser(userUUID: "36d11602-1111-2222-3333-a
 
 ```swift
 linkUserToCenterRooms(userUUID: String, branchUUID: String, roomsUUID: [String]?,
-			completion: @escaping (_ httpCode: Int, _ response: String?) -> Void)
+            completion: @escaping (_ httpCode: Int, _ response: String?) -> Void)
 ```
 
 Sends a request to link a user in the rooms for the given branch UUID
@@ -1528,7 +1530,7 @@ Sends a request to link a user in the rooms for the given branch UUID
 let apiManager = RMApi()
 let branchTestUUID = "fiuh2-122-3234-fwefw"
 apiManager.linkUserToCenterRooms(userUUID: "3111bb602-1111-2222-3333-afff57dfesss", branchUUID: branchTestUUID ,roomsUUID: nil) { (httpCode, jsonString) in
-	print(jsonString)
+    print(jsonString)
 }
 
 ```
@@ -1549,7 +1551,7 @@ let branchTestUUID = ""
 let userUUID = ""
 
 apiManager.unlinkUserFromBranch(userUUID: userUUId, branchUUID: branchTestUUID) { httpCode in
-	//if httpCode was 204, the branch has been removed.
+    //if httpCode was 204, the branch has been removed.
 }
 
 ```
@@ -1563,12 +1565,12 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
         // Override point for customization after application launch.
         let clientKey = "YOUR_KEY"
         let tokenLevel = "YOUR_TOKEN"
-				let urlBase = "YOUR_BASE_URL"
-				let urlRemote = "YOUR_REMOTE_URL"
+                let urlBase = "YOUR_BASE_URL"
+                let urlRemote = "YOUR_REMOTE_URL"
 
         RMSettings.shared.setCredentials(client_key: clientKey, token: tokenLevel)
-				RMSettings.shared.setUrlApi(with: urlBase)
-				RMSettings.shared.setUrlRemote(with: urlRemote)
+                RMSettings.shared.setUrlApi(with: urlBase)
+                RMSettings.shared.setUrlRemote(with: urlRemote)
 
         return true
     }
@@ -1598,7 +1600,7 @@ let roomTestUUID = ""
 let userUUID = ""
 
 apiManager.retrieveRemoteRooms(userUUID: userUUID) { httpCode, jsonResponse in
-	print(jsonResponse)
+    print(jsonResponse)
 }
 
 ```
@@ -1672,7 +1674,7 @@ let userUUID = ""
 let classUUID = ""
 
 apiManager.connectUserToClass(classUUID: classUUID, userUUID: userUUID) { httpCode, jsonResponse in
-	print(jsonResponse)
+    print(jsonResponse)
 }
 
 ```
@@ -1711,9 +1713,9 @@ let user = RMUser()
 let classUUID = ""
 
 apiManager.sendRealTimeData(user: user, imageUserUrl: "urlImage" ,
-							pseudonym: user.pseudonym,  stepsTot: 10,
-							caloriesTot: 100, hr: 60, effort: 34, classUUID: classUUID) { httpCode, jsonResponse in
-	print(jsonResponse)
+                            pseudonym: user.pseudonym,  stepsTot: 10,
+                            caloriesTot: 100, hr: 60, effort: 34, classUUID: classUUID) { httpCode, jsonResponse in
+    print(jsonResponse)
 }
 ```
 
@@ -1777,7 +1779,7 @@ httpCode = 410
 
 ```swift
 public func disconnectUserFromClass(classUUID: String, userUUID: String,
-					 completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+                     completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
 ```
 
 ##### Example
@@ -1788,14 +1790,14 @@ let user = RMUser()
 let classUUID = ""
 
 apiManager.disconnectUserFromClass(classUUID: String, userUUID: String) { (httpCode, _) in
-	print("Debug httpCode: \(httpCode)")
+    print("Debug httpCode: \(httpCode)")
 }
 ```
 
 ##### Response example
 
 ```swift
-	"Debug httpCode: 204"
+    "Debug httpCode: 204"
 ```
 
 ### Gamification
@@ -1807,14 +1809,14 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
         // Override point for customization after application launch.
         let clientKey = "YOUR_KEY"
         let tokenLevel = "YOUR_TOKEN"
-				let urlBase = "YOUR_BASE_URL"
-				let urlRemote = "YOUR_REMOTE_URL"
-				let urlGamification = "YOUR_GAMIFICATION_URL"
+                let urlBase = "YOUR_BASE_URL"
+                let urlRemote = "YOUR_REMOTE_URL"
+                let urlGamification = "YOUR_GAMIFICATION_URL"
 
         RMSettings.shared.setCredentials(client_key: clientKey, token: tokenLevel)
-				RMSettings.shared.setUrlApi(with: urlBase)
-				RMSettings.shared.setUrlRemote(with: urlRemote)
-				RMSettings.shared.setUrlGamification(with: urlGamification)
+                RMSettings.shared.setUrlApi(with: urlBase)
+                RMSettings.shared.setUrlRemote(with: urlRemote)
+                RMSettings.shared.setUrlGamification(with: urlGamification)
 
         return true
     }
@@ -1831,18 +1833,18 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 
 Retrieves a json string that contains al the challenges and goals of a user.
 
-```swift
+```swift 
 public func  getUserChallenges(userUUID: String,
-									completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
-```
+                                    completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+``` 
 
 ##### Example
 
-```swift
+```swift 
 let apiManager = RMApi()
 
 apiManager.getUserChallenges(userUUID: "userUUID") { (httpCode, response) in
-	print("user challenges \(response)")
+    print("user challenges \(response)")
 }
 ```
 
@@ -2413,19 +2415,19 @@ apiManager.getUserChallenges(userUUID: "userUUID") { (httpCode, response) in
 
 This request unsubscribe a user from a challenge.   
 
-```swift
+```swift 
 public func  leaveChallenge(challengeUUID: String, userUUID: String,
-									completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
-```
+                                    completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+``` 
 
 ##### Example
 
-```swift
+```swift 
 let apiManager = RMApi()
 
 apiManager.leaveChellenge(challengeUUID: "uuid", userUUID: "userUUID") { (httpCode, response) in
 
-	print("user unsubscribed")
+    print("user unsubscribed")
 }
 ```
 
@@ -2483,9 +2485,9 @@ userToStore.physiologicalVariables!.height = "190"
 userToStore.physiologicalVariables!.restingHeartRate = "60"
 
 do {
-	try storageManager.storeUserInfo(user: userToStore)
+    try storageManager.storeUserInfo(user: userToStore)
 } catch {
-	print("Error", error)
+    print("Error", error)
 }
 ```
 
@@ -2651,9 +2653,9 @@ let storageManager = RMStorageManager()
 let training = RMTrainingType()
 
 do {
-	try storageManager.storeTrainingType(trainingType: training)
+    try storageManager.storeTrainingType(trainingType: training)
 } catch {
-	print("Error while storing", error)
+    print("Error while storing", error)
 }
 
 ```
@@ -3213,6 +3215,66 @@ The RMResponse is a struct that is used as response in some of the above methods
 | `String`| `message` | String that contains a message response |
 | `Bool` | `success` | Boolean that indicates if the request was a success. |
 
+### RMCommunicationManager
+
+```swift
+public  class  RMCommunicationManager: NSObject
+```
+
+The `RMCommunicationManager` class contains all the implementations to communicate your application with an apple watch app.
+
+| Returns      | Function | Description |
+| ----------- | ----------- | --------- |
+| `void` | `configureSession()` | Configure the session communication with the ape watch. |
+| `void` | `syncUserInfo()` | Sends all the user information needed to the apple watch paired. |
+
+#### configureSession()
+
+```swift
+public  func configureSession()
+```
+
+The method starts a communication and manages all the message recived from the apple watch paired.
+
+**It is recommended to call the method ones your app is launch in the app delegate**
+
+##### example
+
+```swift 
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+let urlBase =  "" // Your url api
+let clientKey = "" // Your client key
+let token = "" // Your token
+
+RMSettings.shared.setUrlApi(with: urlBase)
+RMSettings.shared.setCredentials(client_key: clientKey, token: token)
+RMSettings.shared.initRookMotionSDK()
+RMCommunicationManager.shared.configureSession()
+return  true
+}
+```
+
+
+### Delegate
+
+You must assign an object conforming to the RWCommunicationDelegate protocol to this. The delegate is responsible for responding to session-related changes, for processing incoming data, and for responding to errors.
+
+#### CommunicationDelegate
+
+A set of methods that provide the data related to the connection information
+
+```swift
+public protocol CommunicationDelegate
+```
+
+|Function| Description|
+|-------|------------|
+|```func session(_ session: WCSession, messageData: [String : **Any**])```|Tells the delegate when a message has been received. |
+|```session(_ session: WCSession, userInfo: [String : Any])``` |Tells the delegate when a dictionary has been received.|
+|```session(_ session: WCSession, message: [String : Any])```| Tells the delegate when a message has been received. |
+
+
 
 ### RMModels
 
@@ -3523,3 +3585,5 @@ This documentation is provided by **RookMotion** all rights reserved to Rookerie
 Startup México SUM Campus Ciudad de México  
 
 +52 55 39406461
+
+
