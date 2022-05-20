@@ -689,6 +689,7 @@ Provides methods to interact with the RookMotion server. Involves CRUD actions f
 5. [RookRemote](#user-content-rookremote-api)
 6. [Gamification](#user-content-gamification-api)
 
+
 ###  User api
 
 | Function      | Description |
@@ -1585,6 +1586,10 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 | `sendRealTimeData(user: RMUser, imageUserUrl: String? = nil, pseudonym: String,
  stepsTot: Int, caloriesTot: Int, hr: Int, effort: Int, classUUID: String, retriveUsersList: Bool = false , completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Send the real time data of a training to the remote class connected. |
 | `disconnectUserFromClass(classUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Sent a request to disconnect a user from a remote class. |
+| `isUserLinkedToBranch(branchUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Returns a status code if the user in linked to a center |
+| `getRemoteRoomInfo(roomUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?,_ remoteClass: RemoteClasInfo?) -> Void)` | Returns a json string object with the information of a remote class |
+| `autoLinkUserToCenter(userUUID: String, branchUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Links a user to a center, with this method the center does not have to accept the user. |
+
 
 #### retrieveRemoteRooms
 
@@ -1798,6 +1803,95 @@ apiManager.disconnectUserFromClass(classUUID: String, userUUID: String) { (httpC
 
 ```swift
     "Debug httpCode: 204"
+```
+
+#### isUserLinkedToBranch()
+
+The httpCode of the response indicates if the user is linked or not.
+If httpCode is equal to 200, the user is linked.
+If httpCode is equal to 204, the user is  not linked.
+
+```swift
+public  func  isUserLinkedToBranch(branchUUID: String, userUUID: String,
+									 completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+```
+
+##### Example
+
+```swift
+let apiManager = RMApi()
+let user = RMUser()
+let branchUUID = "criejr-wfij33-2kn-3222"
+
+apiManager.isUserLinkedToBranch(branchUUID: String, userUUID: String) { (httpCode, _) in
+    print("Debug httpCode: \(httpCode)")
+}
+```
+
+##### Response example
+
+```swift
+    "Debug httpCode: 204"
+```
+
+#### getRemoteRoomInfo()
+
+Returns a json string and a `RemoteClasInfo`object with the room information
+
+```swift
+public  func  getRemoteRoomInfo(roomUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?,_ remoteClass: RemoteClasInfo?) -> Void)
+```
+##### Example
+
+```swift
+let apiManager = RMApi()
+let user = RMUser()
+let branchUUID = "criejr-wfij33-2kn-3222"
+
+apiManager.getRemoteRoomInfo(roomUUID: String) { (httpCode, jsonResponse, RemoteClass) in
+    print("Debug resposne: \(jsonReponse)")
+}
+```
+
+##### Response example
+
+```json
+{
+"room_uuid": "dbb59776-055a-435f-8294-474d13d582e6",
+"room_name": "tres",
+"configuration_class_uuid": "224d4ec2-fd8e-44fc-bab5-98cb4e8b2206",
+"duration": 5,
+"capacity": 5,
+"class_delay": 1,
+"training_type_uuid": "7ddafe63-50cb-4024-a39b-39bbd40e19bd",
+"training_name": "trampolín",
+"use_steps": 1,
+"step_options": "trampoline",
+"meet_number": null,
+"meet_password": null
+}
+```
+
+
+#### autoLinkUserToCenter()
+
+Auto links a user to a center.
+
+```swift
+public func autoLinkUserToCenter(userUUID: String, branchUUID: String,
+							 completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+```
+
+##### Example
+
+```swift
+let apiManager = RMApi()
+let user = RMUser()
+let branchUUID = "criejr-wfij33-2kn-3222"
+
+apiManager.autoLinkUserToCenter(userUUID: String, branchUUID: String) { (httpCode, _) in
+    print("Debug httpCode: \(httpCode)")
+}
 ```
 
 ### Gamification
