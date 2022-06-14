@@ -41,6 +41,7 @@ These functionalities are:
 3. [Package usage](#user-content-package-usage)
     * [RMSensorManager class](#user-content-rmsensormanager-class)
     * [RMTrainingManager class](#user-content-rmtrainingmanager-class)
+    * [RMBasalCalculator class](#user-content-rmbasalcalculator-class)
     * [Network](#user-content-networkclass)
         * [Network class](#user-content-networkclass)
         * [RMApi class](#user-content-rmapi-class)
@@ -422,11 +423,15 @@ The developer can inherence from this class that provides automated methods to p
 | void | ```cancelTraining(sensor: CBPeripheral?)``` |
 | void | ```loadUnfinishedTraining()```|
 | void | ```pauseTraining()``` |
+| void | `storeBicycleRecord(resistance: Float, cadence: Int, power: Float)` |
 
 #### startTraining()
+
 ```swift
 public func startTraining()
 ```
+
+**Note: A user have to be stored in the local data in order to perform this  action, if there is not user stored, the calories and the heart rate effort will  not be calculated**
 
 Automates the Bluetooth methods for sensor discovery, selection, connection, re-connection, notification enabling, and data recording. While the stop method is not called, this process will keep the sensor connected and notifying, in case of disconnection a reconnection process will be performed.
 
@@ -576,6 +581,14 @@ class TrainingClass: RMTrainingManager {
 }
 ```
 
+#### storeBicycleRecord
+
+If the training is active, the method will add a `RMBicycleDataRecords` object in the records property of the training.
+
+```swift
+public func storeBicycleRecord(resistance: Float, cadence: Int, power: Float)
+```
+
 #### Override methods
 
 If a class inherits from RMTrainingManager class, the next methods will be available to override, these methods can be used to display the training data.
@@ -626,6 +639,69 @@ class TrainingClass: RMTrainingManager {
 
 }
 ```
+
+### RMBasalCalculator class
+
+The RMBasalCalculator class allows to get the resting heart rate of a user.
+
+```swift
+public class RMBasalCalculator: NSObject
+```
+#### Properties
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| sensorAcquisition | `CBPeripheral?` | Reference to the sensor that will be used for measure the resting heart rate. |
+| sensorManager | `RMSensorManager.shared` | Reference of the singleton instance of the class RMSensorManager |
+| isAcquisitionActive | `Bool` | Variable to know if the acquisition is active. |
+| sensorList | `[CBPeripheral]` | This array of CBPeripheral contains the discovered sensors around the device. |
+
+#### Methods
+
+| Function      | Description |
+| ----------- | ----------- |
+| `startAcquisition(with sensor: CBPeripheral, duration: Int = 180)` | Starts the acquisition to calculate the resting heart rate.  |
+| `stopAcquisition()` | Stops the resting heart rate calculation. |
+| `connectSensor(_ sensor : CBPeripheral)` | Starts a connection with a sensor. |
+
+#### startAcquisition()
+
+Starts the acquisition to calculate the resting heart rate.
+
+```swift
+public func startAcquisition(with sensor: CBPeripheral, duration: Int = 180)
+```
+
+#### stopAcquisition()
+
+Stops the resting heart rate calculation.
+
+```swift 
+public func stopAcquisition()
+```
+
+#### connectSensor()
+
+Starts a connection with a sensor.
+
+```swift
+public func connectSensor(_ sensor : CBPeripheral)
+```
+
+#### Callbacks
+
+A set of methods that provide the data related to the resting heart rate.
+
+```swift
+public protocol RMBasalCalculatorDelegate
+```
+
+|Function| Description|
+|-------|------------|
+| `restingHr(didEndCollectData: RestingHearRateSample)` | This method is called when the acquisition end. |
+| `restingHr(didChangeHeartRate: RestingHearRateSample)` | This method is called every time a new sample is collected |
+| `restingHr(secondsLeft: Int)` | Returns the seconds left of the acquisition. |
+
 
 ###  Network.class
 
@@ -1813,7 +1889,7 @@ If httpCode is equal to 204, the user is  not linked.
 
 ```swift
 public  func  isUserLinkedToBranch(branchUUID: String, userUUID: String,
-									 completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+                                     completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
 ```
 
 ##### Example
@@ -1879,7 +1955,7 @@ Auto links a user to a center.
 
 ```swift
 public func autoLinkUserToCenter(userUUID: String, branchUUID: String,
-							 completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+                             completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
 ```
 
 ##### Example
@@ -3018,6 +3094,7 @@ Returns the sensor stored in RMTrainingPreferences
 | `void` | `storeStepsZonesSummaries(summary : RMTrainingSummaries , delta_steps: Int , cadence: Float, cadenceElements: Int, effort: Int, time: Int)` | This method updates the steps taken in each zone. |
 | `void` | `storeTrainingDuration(time: Int, summary : RMTrainingSummaries)`| Stores or updates the duration for a given summary of a training. |
 | `void` | `addRecordForTraining(hrRecord: RMHeartRateDataRecords? = nil, stepRecord: RMStepDataRecords? = nil, _ training: RMTrainingInfo)` | Adds a RMHeartRateDataRecords and a RMStepDataRecords object in the given training |
+| `void` | `addBicycleRecord(for training: RMTrainingInfo, bicycleRecord: RMBicycleDataRecords)`| Adds a RMBicycleDataRecords object in the given training |
 | `void` | `updateTrainingInfo( _ stop: String  = "", sensorUUID: String? = nil, trainingTypeUUID: String? = nil, _ training: RMTrainingInfo)` | Updates a TrainingInfo object whit the sensorUUID, trainingTypeUUID or the stop date given. |
 | `void` | `updateTrainingSummariesToSend(summaryElement : RMTrainingSummary, _ training: RMTrainingInfo)` | Updates the RMTrainingSummary object in the training given. |
 | `void` | `updateTrainingAuxSummaries(_ training : RMTrainingInfo, auxSummary: RMTrainingAuxiliarSummary)` |Updates the auxiliary summaries of a training.|
@@ -3110,6 +3187,18 @@ Adds a RMHeartRateDataRecords and a RMStepDataRecords object in the given traini
 **Parameters**:
 - hrRecord: The RMHeartRateDataRecords object to store
 - stepRecord: The RMStepDataRecords object to store
+- training: The RMTrainingInfo object that will be updated
+
+#### addBicycleRecord
+
+```swift
+public func addBicycleRecord(for training: RMTrainingInfo, bicycleRecord: RMBicycleDataRecords)
+```
+
+Adds a RMBicycleDataRecords object in the given training
+
+**Parameters**
+- bicycleRecord: The RMBicycleDataRecords object to store
 - training: The RMTrainingInfo object that will be updated
 
 #### updateTrainingInfo()
