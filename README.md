@@ -47,7 +47,7 @@ These functionalities are:
         * [RMApi class](#user-content-rmapi-class)
     * [RMStorageManager class](#user-content-rmstoragemanager-class)
     * [RMClass](#user-content-rmclass)
-    * * [RMCommunicationManager](#user-content-rmcommunicationmanager)
+    * [RMCommunicationManager](#user-content-rmcommunicationmanager)
     * [RMModels](#user-content-rmmodels)
 
 
@@ -1998,6 +1998,12 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 | ----------- | ----------- |
 | ```getUserChallenges(userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)``` | Returns a json string with all the challenges and goals of a user. |
 | ```leaveChallenge(challengeUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void) ``` | Sends a request to unsubscribe a user from a challenge. |
+| `fetchUserChallenges(userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Retrieves a json string with a list of the active challenges of a user. |
+| `getChallengeHistoryOfUser(userUUID: String, from startDate: Date? = nil, to endDate: Date? = nil, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Retrieves a json string with a list of the no active challenges of a user, if you provide a start date and an end date, the list will be fetched from that rage of dates. |
+| `getChallengeDetails(challengeUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | The method retrieves the details of a challenge. |
+| `getRankingFromChallenge(challengeUUID: String, page: Int = 1, completion: @escaping(_ httpCode: Int, _ reponse: String?) -> Void)` | Retrieves the ranking of a challenge. |
+| `getUserChallnegeRewardsOfUser(with uuid: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Returns a json string of the rewards earned of a user's challenges |
+| `public func exitFromChallenge(challengeUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Removes a user from challenge. |
 
 #### getUserChallenges
 
@@ -2581,12 +2587,102 @@ apiManager.getUserChallenges(userUUID: "userUUID") { (httpCode, response) in
 }
 ```
 
+#### fetchUserChallenges
+
+Retrieves a json string with a list of the active challenges of a user.
+
+```swift 
+public func fetchUserChallenges(userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+``` 
+
+##### Example
+
+```swift 
+let apiManager = RMApi()
+
+apiManager.fetchUserChallenges(userUUID: "userUUID") { (httpCode, response) in
+    print("user challenges \(response)")
+}
+```
+
+#### getChallengeHistoryOfUser
+
+Use this method to retrieve the no active challenges of a user
+
+```swift 
+public func getChallengeHistoryOfUser(userUUID: String, from startDate: Date? = nil, to endDate: Date? = nil, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+``` 
+
+##### Example
+
+```swift 
+let apiManager = RMApi()
+
+apiManager.getChallengeHistoryOfUser(userUUID: "ddd-sass-a-w2") { (httpCode, response) in
+    print("history challenge \(response)")
+}
+```
+
+#### getChallengeDetails
+
+Use this method to retrieve challenge's details
+
+```swift 
+public func getChallengeDetails(challengeUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+``` 
+
+##### Example
+
+```swift 
+let apiManager = RMApi()
+
+apiManager.getChallengeDetails(challengeUUID: "challenge uuid", userUUID: "user uuid") { (httpCode, response) in
+    print("challenge details \(response)")
+}
+```
+
+#### getRankingFromChallenge
+
+Use this method to retrieve a list of the ranking of a challenge
+
+```swift 
+public func getRankingFromChallenge(challengeUUID: String, page: Int = 1, completion: @escaping(_ httpCode: Int, _ reponse: String?) -> Void)
+``` 
+
+##### Example
+
+```swift 
+let apiManager = RMApi()
+
+apiManager.getRankingFromChallenge(challengeUUID: "challenge uuid", page: 1) { (httpCode, response) in
+    print("ranking \(response)")
+}
+```
+
+#### getUserChallnegeRewardsOfUser
+
+Use this method to retrieve a list of the ranking of a challenge
+
+```swift 
+public func getUserChallnegeRewardsOfUser(with uuid: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+``` 
+
+##### Example
+
+```swift 
+let apiManager = RMApi()
+
+apiManager.getUserChallnegeRewardsOfUser(with: "user uuid") { (httpCode, response) in
+    print("user rewards \(response)")
+}
+```
+
 #### leaveChallenge
 
 This request unsubscribe a user from a challenge.   
 
 ```swift 
-public func  leaveChallenge(challengeUUID: String, userUUID: String,
+public func leaveChallenge(challengeUUID: String, userUUID: String,
                                     completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
 ``` 
 
@@ -2601,6 +2697,25 @@ apiManager.leaveChellenge(challengeUUID: "uuid", userUUID: "userUUID") { (httpCo
 }
 ```
 
+#### exitFromChallenge
+
+This method remove a user from a challenge
+
+```swift 
+public func exitFromChallenge(challengeUUID: String, userUUID: String,
+                                  completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)
+``` 
+
+##### Example
+
+```swift 
+let apiManager = RMApi()
+
+apiManager.exitFromChallenge(challengeUUID: "uuid", userUUID: "userUUID") { (httpCode, response) in
+
+    print("user unsubscribed")
+}
+```
 
 
 ### RMStorageManager class
