@@ -1656,11 +1656,10 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 
 
 | Function      | Description |
-| ----------- | ----------- | -------- |
+| ----------- | ----------- |
 | `retrieveRemoteRooms(userUUID: String, completion: @escaping (_ httpCode: Int, _ response: String?) -> Void)` | Return a list of the remote rooms available. |
 | `connectUserToClass(classUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Send a request to connect a user to a remote class |
-| `sendRealTimeData(user: RMUser, imageUserUrl: String? = nil, pseudonym: String,
- stepsTot: Int, caloriesTot: Int, hr: Int, effort: Int, classUUID: String, retriveUsersList: Bool = false , completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Send the real time data of a training to the remote class connected. |
+| `sendRealTimeData(user: RMUser, imageUserUrl: String? = nil, pseudonym: String, stepsTot: Int, caloriesTot: Int, hr: Int, effort: Int, classUUID: String, retriveUsersList: Bool = false , completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Send the real time data of a training to the remote class connected. |
 | `disconnectUserFromClass(classUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Sent a request to disconnect a user from a remote class. |
 | `isUserLinkedToBranch(branchUUID: String, userUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?) -> Void)` | Returns a status code if the user in linked to a center |
 | `getRemoteRoomInfo(roomUUID: String, completion: @escaping(_ httpCode: Int, _ response: String?,_ remoteClass: RemoteClasInfo?) -> Void)` | Returns a json string object with the information of a remote class |
