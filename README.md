@@ -3396,6 +3396,7 @@ This class contains RMApi and RMStorageManager methods to facilitate development
 | `void` | `uploadPendingSensors(completion: @escaping (RMResponse) -> Void)` | Uploads the sensors that still are not on WS. |
 | `void` | `uploadPendingTrainings(delete: Bool,completion: @escaping (RMResponse) -> Void)` | Upload workouts that are finished but for some reason it was not possible to upload the workout to WS. |
 | `void` | `sendTrainingToWS(_ trainingToSend:RMTrainingInfo, _ usrUUID: String, _ delete: Bool , completion: @escaping (RMResponse) -> Void)` | Uploads a workout to WS but not deletes the training from database just updates the uploadedAt property if the delete property is false |
+| `completion block` | `restoreUser(_ email: String, completion: @escaping(RMResponse) -> Void)` | Restore the user information with the email given |
 
 #### RM addUser()
 
@@ -3497,6 +3498,38 @@ Upload workouts that are finished but for some reason it was not possible to upl
 **Parameters**
 - delete: if you want to delete the training after upload this has to be true
 - completion: WS response
+
+## RestoreUser
+
+Restore the user information with the email given
+
+**In case you have updated the sdk to a version without the realm dependecy, It is recommened to create a function that restores the user**
+
+```swift
+public func restoreUser(_ email: String, completion: @escaping(RMResponse) -> Void)
+```
+
+**Parameters**
+- email: email `String` of the user to restore.
+- completion: RMResponse object 
+
+##### Example 
+
+```swift
+
+let rookMasterClass: RMClass = RMClass()
+let rookStorage: RMStorageManager = RMStorageManager()
+
+func restoreUser(email: String) {
+  if rookStorage.readUserInfo() == nil {
+    rookMasterClass.restoreUser(email) { response in
+      print(response)
+    }
+  }
+}
+
+
+```
 
 #### RMResponse
 
