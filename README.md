@@ -41,6 +41,7 @@ These functionalities are:
 3. [Package usage](#user-content-package-usage)
     * [RMSensorManager class](#user-content-rmsensormanager-class)
     * [RMTrainingManager class](#user-content-rmtrainingmanager-class)
+    * [RookTrainingManager class](#user-content-rooktrainingmanager-class)
     * [RMBasalCalculator class](#user-content-rmbasalcalculator-class)
     * [Network](#user-content-networkclass)
         * [Network class](#user-content-networkclass)
@@ -390,6 +391,96 @@ class CustomClass: ViewController, RMSensorConnectionCallback {
 }
 
 ```
+
+### RookTrainingManager class
+
+```swift
+public class RookTrainingManager
+```
+
+RookTrainingManager class tracks the user’s training using Bluetooth sensors handling all the involved steps, storage, processing of the training data, and upload it to server, this class runs one training session at a time
+
+#### Properties
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| trainingSensor | ```CBPeripheral?``` | Reference to sensor that will be used for training. |
+|  training | [RMTrainingInfo](#user-content-rmtriaininginfo) | This model object that contains all the data of a training |
+| duration | ```Float``` | Variable to set the training duration |
+| isTrainingActive | ```Bool``` | Variable to know if the training is active or not. |
+| isTimerRunning | ```Bool``` | Variable to know if the timer of duration is already running. |
+| firstStart | ```Bool``` | Variable to know if it is the first start of the training. |
+| trainingDelegate | `RookTrainingManagerDelegate` | The delegate receives notifications when a training session’s data changes. |
+
+#### RookTrainingManagerDelegate
+
+The delegate receives notifications when a training session’s data changes.
+
+#### Methods
+
+| function      | Description |
+| ----------- | ----------- |
+| `func durationUpdated(duration: Int)` | Tells the delegate that the duration of the workout has changed. |
+| `func heartRateDataUpdated(hrData: RMHrDerivedRecord)` | Tells the delegate that a new hear rate event has been collected. |
+| `func stepsUpdated(stepDerivedData: RMStepDerivedRecord)` | Tells the delegate that a new step event has been collected. |
+| ` func batteryLevelUpdated(batteryLevel: Int)` | Tells the delegate that the battery level has changed. |
+| `func handleSensorDisconnected(peripheral: CBPeripheral)` | Tells the delegate that a sensor has disconnected. |
+| `func handleSensorConnected(peripheral: CBPeripheral)` | Tells the delegate that a sensor has connected.  |
+
+
+#### Methods
+
+| function      | Description |
+| ----------- | ----------- |
+| `func startTraining()` | Starts the training session activity |
+| `func connectSensor(_ sensor : CBPeripheral)` | Starts a connection with a given peripheral |
+| `func finishTraining(sensor: CBPeripheral? = nil, completion: @escaping (RMResponse, RMTrainingResponse) -> Void)`| Ends the training session. |
+| `func cancelTraining(sensor: CBPeripheral?)` | Cancels the training session. |
+| `func pauseTraining()` | Pauses the workout session. |
+| `func storeBicycleRecord(resistance: Float, cadence: Int, power: Float)` | Stored a bicycle record in the training session. |
+
+#### startTraining()
+
+```swift
+public func startTraining()
+```
+
+**Note: A user have to be stored in the local data in order to perform this  action, if there is not user stored, the calories and the heart rate effort will  not be calculated**
+
+Automates the Bluetooth methods for sensor discovery, selection, connection, re-connection, notification enabling, and data recording. While the stop method is not called, this process will keep the sensor connected and notifying, in case of disconnection a reconnection process will be performed.
+
+Every time the sensor send information, the training data will be generated and available in the [override methods](#user-content-override-methods)
+
+Training data includes training duration, heart rate, steps, calories, effort...  If the sensor has no steps measurement, the steps will be 0.
+
+Note: Before calling this method it is recommended to establish a connection with a sensor using [connectSensor](#user-content-connectsensor) and configure the [training](#user-content-rmtraininginfo) object
+
+
+#### connectSensor()
+
+```swift
+public func connectSensor(_ sensor : CBPeripheral)
+```
+
+Starts a connection with a given peripheral, when the connection is established, the callback methods will return the sensor data
+
+##### Example
+```swift
+
+#### finishTraining()
+
+```swift
+public func finishTraining(sensor: CBPeripheral? = nil, completion: @escaping (RMResponse, RMTrainingResponse) -> Void)
+```
+Automates the Bluetooth methods for sensor disconnection, training data summary, and upload training.
+
+Training data include heart rate, calories, effort, and steps records. Summaries include (min, avg, and max) values for the given records.
+
+If the sensor has no steps measurement, the steps and summaries won't be passed.
+
+In the background, uploads the current training as well as any other trainings pending to be uploaded to the RookMotion Server.
+
+
 
 ### RMTrainingManager class
 
